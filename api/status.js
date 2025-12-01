@@ -1,12 +1,15 @@
 // api/status.js
-import fs from 'fs';
-import path from 'path';
+import { createClient } from 'redis';
 
-export default function handler(req, res) {
-  const countsFile = path.join(process.cwd(), 'counts.json');
-  let counts = {};
+const client = createClient({ url: process.env.REDIS_URL });
+await client.connect();
+
+export default async function handler(req, res) {
   try {
-    counts = JSON.parse(fs.readFileSync(countsFile, 'utf8'));
-  } catch {}
-  res.status(200).json(counts);
+    const countsRaw = await client.get('counts');
+    const counts = countsRaw ? JSON.parse(countsRaw) : {};
+    res.status(200).json(counts);
+  } catch (err) {
+    res.status(500).json({ error: 'Chyba při čtení z Redis' });
+  }
 }
