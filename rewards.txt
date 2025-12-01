@@ -1,0 +1,25 @@
+{
+  "year": 2025,
+  "month": 12,
+  "days": {
+    "1": {
+      "title": "Luxusní hydratační péče",
+      "description": "Sleva 25 % na vybrané hydratační séra.",
+      "dailyLimit": 5,
+      "codes": ["HYDRA25-A", "HYDRA25-B", "HYDRA25-C"]
+    },
+    "2": {
+      "title": "Masky a peelingy",
+      "description": "Sleva 20 % na pleťové masky.",
+      "dailyLimit": 3,
+      "codes": ["MASKA20-X", "MASKA20-Y", "MASKA20-Z"]
+    },
+    "3": {
+      "title": "Vánoční balíčky",
+      "description": "Sleva 15 % na dárkové sety.",
+      "dailyLimit": 3,
+      "codes": ["VANOCE15-1", "VANOCE15-2", "VANOCE15-3"]
+    }
+  }
+}
+

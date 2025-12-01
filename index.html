@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kosmetický adventní kalendář</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-snow" aria-hidden="true"></div>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>Kosmetický adventní kalendář</h1>
+      <p>Každý den v prosinci dárek pro první tři šťastlivce.</p>
+      <div id="today-pill" class="today-pill" aria-live="polite"></div>
+    </div>
+  </header>
+
+  <main class="calendar-container">
+    <section id="calendar-grid" class="calendar" aria-label="Adventní kalendář (1–24)"></section>
+
+    <section id="door-panel" class="door-panel" hidden aria-hidden="true">
+      <button id="close-door" class="close" aria-label="Zavřít okno">×</button>
+      <div class="door-content" role="dialog" aria-modal="true" aria-labelledby="door-title">
+        <h2 id="door-title">Den —</h2>
+        <p id="door-desc">Popis odměny</p>
+
+        <div class="quota">
+          <span id="quota-badge" class="badge">Zbývá: 3</span>
+          <small id="quota-info">Denní limit: 3</small>
+        </div>
+
+        <form id="email-form" class="email-form" novalidate>
+          <label for="email">Zadej e‑mail pro získání poukazu</label>
+          <div class="email-input-row">
+            <input type="email" id="email" name="email" placeholder="např. jana.novak@example.com" required />
+            <button type="submit" class="cta">Získat poukaz</button>
+          </div>
+          <p class="form-note">Pouze první tři uživatelé denně získají poukaz. Jeden e‑mail = jedna odměna na daný den.</p>
+        </form>
+
+        <div id="coupon-area" class="coupon-area" hidden>
+          <canvas id="coupon-canvas" width="900" height="500" aria-label="Poukaz s kódem"></canvas>
+          <div class="coupon-actions">
+            <button id="download-coupon" class="secondary">Uložit jako obrázek</button>
+            <button id="print-coupon" class="secondary">Vytisknout</button>
+          </div>
+          <p class="coupon-note">Kód ti přijde i do e‑mailu (pokud máš backend pro odeslání).</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 Vánoční kosmetika • Každý den radost</p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

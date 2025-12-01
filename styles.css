@@ -1,0 +1,258 @@
+:root{
+  --bg: #0c0f1a;
+  --card: #121527;
+  --accent: #e84e66;
+  --accent-2: #3fd1b7;
+  --gold: #e5c77a;
+  --text: #e8ecf1;
+  --muted: #9aa4b2;
+  --shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Reset and base */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background: radial-gradient(1200px 700px at 70% -100px, #1b2241, var(--bg));
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+
+/* Ensure hidden attribute actually hides the panel even if other CSS sets display */
+#door-panel[hidden],
+.door-panel[hidden] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Decorative snow background */
+.bg-snow{
+  position:fixed; inset:0; pointer-events:none;
+  background-image:
+    radial-gradient(2px 2px at 20% 10%, rgba(255,255,255,0.7), transparent 40%),
+    radial-gradient(2px 2px at 80% 30%, rgba(255,255,255,0.6), transparent 40%),
+    radial-gradient(2px 2px at 50% 70%, rgba(255,255,255,0.6), transparent 40%),
+    radial-gradient(2px 2px at 30% 90%, rgba(255,255,255,0.7), transparent 40%);
+  animation: snowfall 12s linear infinite;
+  opacity:0.55;
+  z-index:0;
+}
+@keyframes snowfall{
+  0%{transform: translateY(-10px)}
+  100%{transform: translateY(30px)}
+}
+
+/* Header */
+.hero{
+  padding: 48px 20px 20px;
+  text-align:center;
+  position:relative;
+  z-index:1;
+}
+.hero-inner{
+  max-width: 980px; margin:0 auto;
+}
+.hero h1{
+  font-family: "Playfair Display", serif;
+  font-size: clamp(30px, 6vw, 48px);
+  margin:0 0 8px;
+  background: linear-gradient(90deg, var(--gold), #fff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero p{
+  margin:0 auto 14px;
+  color: var(--muted);
+  font-size: 16px;
+}
+.today-pill{
+  display:inline-block;
+  padding:8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(229,199,122,0.12), rgba(63,209,183,0.08));
+  border:1px solid rgba(229,199,122,0.25);
+  color: var(--gold);
+  font-weight: 600;
+  font-size:14px;
+}
+
+/* Layout */
+.calendar-container{
+  max-width:1100px;
+  margin: 18px auto 48px;
+  padding: 0 18px;
+  position:relative;
+  z-index:1;
+}
+.calendar{
+  display:grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+@media (max-width: 900px){
+  .calendar{ grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 640px){
+  .calendar{ grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Day card */
+.day{
+  position:relative;
+  background: linear-gradient(180deg, #181c33, var(--card));
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow: var(--shadow);
+  border-radius: 14px;
+  padding: 18px 14px;
+  min-height: 110px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:not-allowed;
+  transition: transform .12s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease;
+  overflow:hidden;
+}
+.day:hover{ transform: translateY(-4px); }
+.day .num{
+  font-family: "Playfair Display", serif;
+  font-size: 34px; font-weight:700;
+  letter-spacing:1px;
+}
+.day .label{
+  position:absolute; bottom:10px; left:12px;
+  font-size:12px; color: var(--muted);
+}
+.day.locked::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(135deg, rgba(232,78,102,0.04), rgba(63,209,183,0.04));
+}
+.day.today{
+  border-color: rgba(229,199,122,0.65);
+  cursor:pointer;
+}
+.day.today .num{
+  color: var(--gold);
+  text-shadow: 0 1px 8px rgba(229,199,122,0.25);
+}
+.day.past{
+  cursor:not-allowed; opacity:0.72;
+}
+
+/* Door panel modal */
+.door-panel{
+  position: fixed;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  padding:20px;
+  z-index: 2000;
+}
+.door-content{
+  position:relative;
+  width:100%;
+  max-width: 920px;
+  background: linear-gradient(180deg, #12142a, #0f1330);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  padding: 26px;
+  color: var(--text);
+}
+.close{
+  position:absolute; top:12px; right:12px;
+  border:none; background:transparent; color:#fff;
+  font-size:26px; line-height:1; cursor:pointer;
+  opacity:0.9;
+}
+.door-content h2{
+  margin:6px 0 8px;
+  font-family: "Playfair Display", serif;
+  font-size: 28px;
+}
+.door-content p{ color: var(--muted); margin: 0 0 8px; }
+
+/* Quota */
+.badge{
+  display:inline-block;
+  background: rgba(63,209,183,0.08);
+  border: 1px solid rgba(63,209,183,0.35);
+  color: var(--accent-2);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.quota{ display:flex; align-items:center; gap:12px; margin: 12px 0 18px; }
+.quota small{ color: var(--muted); }
+
+/* Form */
+.email-form label{ display:block; font-weight:600; margin-bottom:8px; color:var(--text); }
+.email-input-row{ display:flex; gap:10px; align-items:center; }
+.email-input-row input{
+  flex:1; padding:12px 14px; border-radius: 10px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0b0e22; color:#fff; outline:none;
+  font-size:15px;
+}
+.email-input-row input::placeholder{ color:#78829b; }
+.cta{
+  padding:12px 16px; border-radius: 10px; border:none; cursor:pointer;
+  background: linear-gradient(90deg, var(--accent), #ff8aa0);
+  color:#fff; font-weight:700; box-shadow: 0 8px 24px rgba(232,78,102,0.12);
+}
+.form-note{ color: var(--muted); margin-top:8px; font-size: 13px; }
+
+/* Coupon area */
+.coupon-area{
+  margin-top: 18px;
+  background: #0b0e22;
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px;
+}
+.coupon-actions{
+  display:flex; gap:10px; margin-top:10px;
+}
+.secondary{
+  padding:10px 14px; border-radius: 10px; border:1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03); color:#fff; cursor:pointer;
+}
+
+/* Footer */
+.footer{
+  padding:20px; text-align:center; color: var(--muted);
+  position:relative; z-index:1;
+}
+
+/* Toast */
+.toast{
+  position:fixed; bottom:16px; left:50%; transform: translateX(-50%);
+  background: #0f1530; border:1px solid rgba(255,255,255,0.06);
+  color:#fff; padding:10px 14px; border-radius: 999px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+  opacity:0; pointer-events:none;
+  transition: opacity .18s ease, transform .18s ease;
+  z-index:3000;
+}
+.toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
+.toast.success{ border-color: rgba(67,196,123,0.5); }
+.toast.error{ border-color: rgba(255,92,122,0.5); }
+
+/* Accessibility focus */
+button:focus, input:focus { outline: 3px solid rgba(63,209,183,0.18); outline-offset: 2px; }
+
+/* Print */
+@media print{
+  body{ background:#fff; color:#000; }
+  .hero, .calendar-container, .footer, .toast, .bg-snow{ display:none !important; }
+  #coupon-canvas{ display:block; }
+}
+
