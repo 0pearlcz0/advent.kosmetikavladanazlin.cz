@@ -1,7 +1,10 @@
 import { createClient } from 'redis';
-import rewards from '../public/rewards.json' assert { type: 'json' };
+import fs from 'fs';
+import path from 'path';
 
 let client;
+
+// Pomocná funkce pro připojení k Redis
 async function getClient() {
   if (!client) {
     client = createClient({ url: process.env.REDIS_URL });
@@ -18,33 +21,50 @@ export default async function handler(req, res) {
 
   try {
     const { day, email } = req.body;
+    if (!day || !email) {
+      return res.status(400).json({ error: 'Chybí den nebo email' });
+    }
+
+    // Načti rewards.json ze složky public
+    const rewardsPath = path.join(process.cwd(), 'public', 'rewards.json');
+    const rewards = JSON.parse(fs.readFileSync(rewardsPath, 'utf8'));
+
     const c = await getClient();
     let countsRaw = await c.get('counts');
     let counts = countsRaw ? JSON.parse(countsRaw) : {};
 
-    if (!counts[day]) counts[day] = { count: 0, emails: [] };
+    const dayStr = String(day);
+    if (!counts[dayStr]) counts[dayStr] = { count: 0, emails: [] };
 
-    if (counts[day].emails.includes(email.toLowerCase())) {
+    const emailLower = email.toLowerCase();
+    if (counts[dayStr].emails.includes(emailLower)) {
       return res.status(409).json({ error: 'Email už použil odměnu' });
     }
 
-    const limit = rewards.days[day].dailyLimit;
-    if (counts[day].count >= limit) {
+    const dayCfg = rewards.days[dayStr];
+    if (!dayCfg) {
+      return res.status(400).json({ error: 'Pro tento den není nastavena odměna' });
+    }
+
+    const limit = dayCfg.dailyLimit || 3;
+    if (counts[dayStr].count >= limit) {
       return res.status(409).json({ error: 'Denní limit vyčerpán' });
     }
 
-    const code = rewards.days[day].codes[counts[day].count];
-    counts[day].count++;
-    counts[day].emails.push(email.toLowerCase());
+    const code = dayCfg.codes[counts[dayStr].count];
+    counts[dayStr].count++;
+    counts[dayStr].emails.push(emailLower);
 
     await c.set('counts', JSON.stringify(counts));
 
-    res.status(200).json({
+    return res.status(200).json({
       code,
-      title: rewards.days[day].title,
-      description: rewards.days[day].description
+      title: dayCfg.title,
+      description: dayCfg.description,
+      remaining: Math.max(limit - counts[dayStr].count, 0)
     });
   } catch (err) {
-    res.status(500).json({ error: 'Chyba při zápisu do Redis', details: err.message });
+    console.error('Chyba v claim handleru:', err);
+    res.status(500).json({ error: 'Chyba při zpracování požadavku', details: err.message });
   }
 }
